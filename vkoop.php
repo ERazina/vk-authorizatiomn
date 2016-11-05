@@ -13,7 +13,8 @@
 			$params = array(
 				'client_id' => self::$client_id,
 				'redirect_uri' => self::$redirect_uri,
-				'response_type' => 'code'
+				'response_type' => 'code',
+				'scope'         => 8,
 			);
 			$url = 'http://oauth.vk.com/authorize';
 			echo $link = '<p><a href="' . $url . '?' . urldecode(http_build_query($params)) . '">Аутентификация через ВКонтакте</a></p>';
@@ -67,6 +68,7 @@
 			//
 			$_SESSION['user'] = $userInfo;
 			$this->getGroups();
+			$this->getAudio();
 
 		}
 
@@ -91,25 +93,25 @@
 
 		}
 
-		public function getStatus()
+		public function getAudio()
 		{
-			$params = array(
+			$info = array(
 				'count' => '10',
-				'extended' => '1',
-				'fields' => 'name,description',
 				'access_token' => $this->token,
+				'scope'         => 8,
+
 			);
 
-			$getGroups = json_decode(file_get_contents('https://api.vk.com/method/groups.get' . '?' . urldecode(http_build_query($params))), true);
-			$getGroups = $getGroups['response'];
-			//print_r($getGroups);
-			foreach ($getGroups as $num => $info) {
-				echo "Название группы" . $info['name'] ."<br />";
-				//echo "Название группы" . $info['description'] ."<br />";
-				//echo '<img src="' . $getGroups['photo'] . '" />';
+			$getAudio = json_decode(file_get_contents('https://api.vk.com/method/audio.get' . '?' . urldecode(http_build_query($info))), true);
+			$getAudio = $getAudio['response'];
 
+			echo 'Список аудиозаписей:';
+			foreach($getAudio as $num => $info) {
+
+				echo '<p>';
+				echo '<audio controls src="' . $info['url'] . '"></audio> ' . $info['artist'] . ' - ' . $info['title'];
+				echo '</p>';
 			}
-
 		}
 	}
 	if (isset($_GET['code'])) {
